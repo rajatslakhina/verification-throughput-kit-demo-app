@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Resolve remote package and build for iOS Simulator
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Toolchain
+        run: xcodebuild -version
+
+      # Proves the package genuinely resolves from GitHub at the pinned
+      # version — not from a local path, and not from whatever `main` happens
+      # to be today.
+      - name: Resolve package dependencies
+        run: xcodebuild -resolvePackageDependencies -project Demo.xcodeproj -scheme Demo
+
+      - name: Show resolved version
+        run: cat Demo.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+
+      # `generic/platform=iOS Simulator`, never a named device. Pinning to
+      # `name=iPhone 16,OS=latest` ties the job to whichever simulator runtimes
+      # happen to be installed on that day's runner image, and they are not
+      # guaranteed. A compile-only check needs no device to exist.
+      - name: Build
+        run: |
+          xcodebuild build \
+            -project Demo.xcodeproj \
+            -scheme Demo \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO
