@@ -92,26 +92,30 @@ a screen nobody saw.
 Stated precisely, because "builds" and "ran" are different claims and only one of them
 is true here:
 
-- **CI compiles the app for an iOS Simulator destination against the package resolved
-  from GitHub.** The `macos-15` job runs `xcodebuild -resolvePackageDependencies`, prints
-  the resulting `Package.resolved` so the resolved version is visible in the log, then
-  `xcodebuild build -destination 'generic/platform=iOS Simulator'`. That is what proves
-  the remote dependency genuinely resolves and the app links against it.
+- **It compiles for an iOS Simulator destination, against the package resolved from
+  GitHub — this ran, and it passed.** The `macos-15` job ran
+  `xcodebuild -resolvePackageDependencies`, printed the resulting `Package.resolved` so
+  the resolved version is in the log, then
+  `xcodebuild build -destination 'generic/platform=iOS Simulator'`. All three steps
+  succeeded. That is what proves the remote dependency genuinely resolves from GitHub
+  and the app links against it — including `VerificationThroughputUI`, compiled for iOS
+  rather than for the host.
   → **[Actions tab](../../actions)** for the live result on the current commit.
 - **The library's own CI is green on two jobs**: Linux (`swift:6.0`, warnings-as-errors
-  on both the build and the test build) and `macos-15` (`swift build` + `swift test`,
-  which is what compiles the SwiftUI layer — the Linux job never sees it, since it sits
-  behind `#if canImport(SwiftUI)`). 95 tests across 8 suites, 0 failures.
+  on both the build and the test build) and `macos-15` (`swift build` + `swift test`).
+  95 tests across 8 suites, 0 failures — that figure is from the library's current
+  `main`, which is what this app resolves against.
   → **[Library Actions tab](https://github.com/rajatslakhina/verification-throughput-kit/actions)**
 - **The app was never launched on a Simulator.** Not by CI — a compile check boots no
-  device — and not by hand. Nobody has seen this UI render.
+  device — and not by hand. Nobody has seen this UI render. "Compiles for a Simulator"
+  and "ran on a Simulator" are different claims, and only the first one is true here.
 - **The console's numbers were verified by execution, not by reading.** Every figure in
   this README was produced by running the fixture in `DemoApp.swift` against the real
-  library and printing the result, including the shard-count table above and the
-  per-scenario bundle counts and costs.
+  library and printing the result: the shard-count table above, the per-scenario bundle
+  counts and costs, the contract tallies, and the budget-slider bands.
 
 `project.pbxproj` was written by hand and checked programmatically for balanced
-braces/parens and for dangling object references before being committed (23 objects, all
+braces/parens and for dangling object references before it was pushed (23 objects, all
 24-hex-character ids, all defined, all referenced).
 
 ## How to run it
