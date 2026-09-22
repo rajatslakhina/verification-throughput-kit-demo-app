@@ -103,8 +103,9 @@ is true here:
   → **[Actions tab](../../actions)** for the live result on the current commit.
 - **The library's own CI is green on two jobs**: Linux (`swift:6.0`, warnings-as-errors
   on both the build and the test build) and `macos-15` (`swift build` + `swift test`).
-  95 tests across 8 suites, 0 failures — that figure is from the library's current
-  `main`, which is what this app resolves against.
+  95 tests across 8 suites, 0 failures. (This app resolves `v1.1.0`, not `main`; the two
+  differ only in README wording, so `Tests/` is byte-identical and the figure holds for
+  both.)
   → **[Library Actions tab](https://github.com/rajatslakhina/verification-throughput-kit/actions)**
 - **The app was never launched on a Simulator.** Not by CI — a compile check boots no
   device — and not by hand. Nobody has seen this UI render. "Compiles for a Simulator"
